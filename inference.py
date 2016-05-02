@@ -1,13 +1,9 @@
-import network
+from network import Network
 
 dt = 0.001
-totalTime = 1
+totalTime = 0.01
 numIterations = int(totalTime/dt)
-network = network.Network(30)
-network.neurons[0].setBinaryValue(True)
-"""network.neurons[3].setBinaryValue(True)
-network.neurons[7].setBinaryValue(True)
-network.neurons[8].setBinaryValue(True)"""
+network = Network(10, 100)
 for t in range(numIterations):
-    print(network.getNetworkStateReadable())
+    print(network.getSpikingIndices())
     network.update(dt)

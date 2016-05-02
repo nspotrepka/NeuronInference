@@ -1,38 +1,26 @@
 class Neuron(object):
-    def __init__(self, resting, upper, lower, voltageDecay, spikeDecay):
+    def __init__(self):
         """Return a new Neuron object."""
-        self.resting = resting
-        self.upper = upper
-        self.lower = lower
-        self.voltageDecay = voltageDecay
-        self.spikeDecay = spikeDecay
+        self.resting = 0
+        self.upper = 10
+        self.lower = -10
+        self.voltageDecay = 0.01
+        self.spikeDecay = 0.01
 
-        self.voltage = resting
+        self.voltage = self.resting
         self.spikeTimer = 0
-        self.running = True
 
-    def update(self, dv, dt):
-        """Update the neuron by one time step."""
-        if self.running:
-            self.voltage += dv
-            if self.voltage < self.lower:
-                self.voltage = self.lower
-            if self.voltage > self.upper:
-                self.voltage = self.lower
-                self.spikeTimer = self.spikeDecay
-            else:
-                self.voltage += -1.0/self.voltageDecay*(self.voltage-self.resting)*dt
-                self.spikeTimer -= max(self.spikeTimer-1, 0)
+    def decay(self, dt):
+        """Decay the neuron by one time step."""
+        if self.voltage < self.lower:
+            self.voltage = self.lower
+        if self.voltage > self.upper:
+            self.voltage = self.lower
+            self.spikeTimer = self.spikeDecay
+        else:
+            self.voltage += -1.0/self.voltageDecay * (self.voltage - self.resting) * dt
+            self.spikeTimer -= max(self.spikeTimer - 1, 0)
 
     def getBinaryValue(self):
         """Get the binary value of the neuron."""
-        self.running = True
         return self.spikeTimer > 0
-
-    def setBinaryValue(self, value):
-        """Set the binary value of the neuron."""
-        self.running = False
-        if value:
-            self.spikeTimer = self.spikeDecay
-        else:
-            self.spikeTimer = 0
