@@ -17,3 +17,14 @@ class Network(object):
         for i in range(self.numNeurons):
             self.neurons[i].update(dv[i], dt)
 
+    def getNetworkStateReadable(self):
+        x = ""
+        counter = 0;
+        for i in range(self.numNeurons):
+            if self.neurons[i].getBinaryValue() == True:
+                x += str(i) + " "
+                counter += 1
+        x += " (" + str(counter) + ")"
+        return x
+
+
