@@ -44,8 +44,8 @@ class Network(object):
         squaredA = np.dot(self.A.transpose(), self.A)
 
         # Neurons do not inhibit themselves
-        #for i in range(self.n):
-        #    squaredA[i, i] = 0
+        for i in range(self.n):
+            squaredA[i, i] = 0
 
         inhibitory = np.dot(squaredA, binaryS)
         addVector = self.alpha * (excitatory - inhibitory - self.sigma * self.sigma)
