@@ -5,7 +5,7 @@ class Neuron(object):
         self.upper = 10
         self.lower = -10
         self.voltageDecay = 0.01
-        self.spikeDecay = 0.01
+        self.spikeDecay = 0.001
 
         self.voltage = self.resting
         self.spikeTimer = 0
@@ -19,7 +19,7 @@ class Neuron(object):
             self.spikeTimer = self.spikeDecay
         else:
             self.voltage += -1.0/self.voltageDecay * (self.voltage - self.resting) * dt
-            self.spikeTimer -= max(self.spikeTimer - 1, 0)
+            self.spikeTimer = max(self.spikeTimer - dt, 0)
 
     def getBinaryValue(self):
         """Get the binary value of the neuron."""
