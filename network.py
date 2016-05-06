@@ -33,13 +33,13 @@ class Network(object):
         self.S = [Neuron() for i in range(n)]
         self.A = np.zeros((m, n))
         for i in range(n):
-            phi = i * 2.0 * math.pi / n
+            phi = i * math.pi / n
             self.A[:,i] = normalize(gabor1D(phi, m)).transpose()
         self.alpha = 1
-        self.sigma = 1
+        self.sigma = 0
 
     def update(self, dt):
-        excitatory = np.dot(self.A.transpose(), self.X)
+        excitatory = np.dot(self.A.transpose(), self.X) / self.m
         binaryS = np.array([n.getBinaryValue() for n in self.S])
         squaredA = np.dot(self.A.transpose(), self.A)
 
@@ -47,10 +47,11 @@ class Network(object):
         for i in range(self.n):
             squaredA[i, i] = 0
 
-        inhibitory = np.dot(squaredA, binaryS)
+        inhibitory = np.dot(squaredA, binaryS) / self.n
         addVector = self.alpha * (excitatory - inhibitory - self.sigma * self.sigma)
         for i in range(self.n):
             self.S[i].voltage += addVector[i]
+            print(addVector[i])
             self.S[i].decay(dt)
 
     def getSpikingIndices(self):
