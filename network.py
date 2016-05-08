@@ -18,8 +18,8 @@ def gabor1D(phi, m):
 def normalize(v):
     s = 0
     for x in v:
-        if x > s:
-            s = x
+        if math.fabs(x) > s:
+            s = math.fabs(x)
     if s == 0:
         return v
     else:
@@ -32,34 +32,35 @@ class Network(object):
     def __init__(self, m, n):
         self.m = m
         self.n = n
-        self.X = gabor1D(0, m)+gabor1D(math.pi*3/2, m)
+        self.X = gabor1D(0, m)
         self.S = [Neuron() for i in range(n)]
         self.A = np.zeros((m, n))
         for i in range(n):
             phi = i * 2.0 * math.pi / n
             self.A[:,i] = gabor1D(phi, m).transpose()
-        self.alpha = 2
+        self.alpha = 250000
         self.sigma = 0
 
-    def update(self, dt):
-        excitatory = normalize(1 / ( np.array([np.sum((self.A.transpose()[i]-self.X)**2) for i in range(self.n)]) / self.m))
-        binaryS = np.array([n.getBinaryValue() for n in self.S])
-        squaredA = np.zeros((self.n, self.n))
+        excitatory = np.dot(self.A.transpose(), self.X) / self.m
+        # Half-wave square
+        excitatory = np.array([x*x if x >= 0 else 0 for x in excitatory])
+        self.excitatory = excitatory
+
+        squaredA = np.dot(self.A.transpose(), self.A)
+        # Half-wave square
         for i in range(self.n):
             for j in range(self.n):
-                squaredA[i,j] = np.sum((self.A.transpose()[i] - self.A.transpose()[j])**2)
-        squaredA = 1 / squaredA
-
+                x = squaredA[i, j]
+                squaredA[i, j] = x*x/self.n if x >= 0 else 0
         # Neurons do not inhibit themselves
         for i in range(self.n):
             squaredA[i, i] = 0
+        self.squaredA = squaredA
 
-        # Normalize each row
-        for i in range(self.n):
-            squaredA[i] = normalize(squaredA[i])
-
-        inhibitory = np.dot(squaredA, binaryS)
-        addVector = self.alpha * (excitatory - inhibitory - self.sigma * self.sigma)
+    def update(self, dt):
+        binaryS = np.array([n.getBinaryValue() for n in self.S])
+        inhibitory = np.dot(self.squaredA, binaryS)
+        addVector = self.alpha * (self.excitatory - inhibitory - self.sigma * self.sigma)
         for i in range(self.n):
             self.S[i].voltage += addVector[i]
             self.S[i].decay(dt)
