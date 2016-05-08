@@ -9,14 +9,19 @@ class Neuron(object):
 
         self.voltage = self.resting
         self.spikeTimer = 0
+        self.timeSinceSpike = 0
+        self.spikeRate = 0
 
     def decay(self, dt):
         """Decay the neuron by one time step."""
+        self.timeSinceSpike += dt
         if self.voltage < self.lower:
             self.voltage = self.lower
         if self.voltage > self.upper:
             self.voltage = self.lower
             self.spikeTimer = self.spikeDecay
+            self.spikeRate = 1/self.timeSinceSpike
+            self.timeSinceSpike = 0
         else:
             self.voltage += -1.0/self.voltageDecay * (self.voltage - self.resting) * dt
             self.spikeTimer = max(self.spikeTimer - dt, 0)
