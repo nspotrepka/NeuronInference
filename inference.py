@@ -15,7 +15,7 @@ def normalize(v):
         return v/s
 
 dt = 0.0001
-totalTime = 0.1
+totalTime = 0.3
 numIterations = int(totalTime/dt)
 m = 32
 n = 256
@@ -26,15 +26,19 @@ for t in range(numIterations):
         voltage[i, t] = network.S[i].voltage
     network.update(dt)
 
-plt.plot(normalize(network.X))
 
+#plt.plot(voltage[0], 'red')
+#plt.plot(voltage[1], 'green')
+#plt.plot(voltage[2], 'blue')
+#plt.show()
+
+plt.plot(normalize(network.X))
 S = np.zeros(n)
 for i in range(n):
     S[i] = network.S[i].spikeRate
 
 print("Neuron firing rates:")
 print(S)
-
 X2 = np.dot(network.A, S)
 plt.plot(normalize(X2))
 plt.show()

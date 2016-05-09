@@ -33,7 +33,7 @@ class Network(object):
     def __init__(self, m, n):
         self.m = m
         self.n = n
-        self.X = gabor1D(math.pi/4, m)+gabor1D(0, m)
+        self.X = gabor1D(0, m)
         self.S = [Neuron() for i in range(n)]
         self.A = np.zeros((m, n))
         for i in range(n):
